@@ -1,0 +1,39 @@
+{
+  "frontMatter.content.draftField": {"name":"published","type":"boolean","invert":true},
+  "frontMatter.content.pageFolders": [
+    {"title":"Projects","path":"[[workspace]]/content/projects","contentTypes":["project"],"previewPath":"work"},
+    {"title":"Experience","path":"[[workspace]]/content/experience","contentTypes":["experience"]},
+    {"title":"Education","path":"[[workspace]]/content/education","contentTypes":["education"]},
+    {"title":"Certificates","path":"[[workspace]]/content/certificates","contentTypes":["certificate"]}
+  ],
+  "frontMatter.taxonomy.fieldGroups": [
+    {"id":"galleryItem","labelField":"alt","fields":[{"title":"Image or video URL","name":"src","type":"string","single":true},{"title":"Alt text","name":"alt","type":"string","single":true},{"title":"Media type (image/video)","name":"kind","type":"string","single":true}]}
+  ],
+  "frontMatter.taxonomy.contentTypes": [
+    {"name":"project","fileType":"md","fields":[
+      {"name":"title","title":"Title","type":"string","single":true,"required":true},
+      {"name":"slug","title":"Slug","type":"slug","required":true},
+      {"name":"categories","title":"Categories (games, apps, web, automation, creative-tech)","type":"list","required":true},
+      {"name":"lifecycle","title":"Lifecycle","type":"choice","choices":["draft","completed","cancelled"],"required":true},
+      {"name":"featured","title":"Featured on Home","type":"boolean"},
+      {"name":"featuredOrder","title":"Featured carousel position","type":"number"},
+      {"name":"published","title":"Visible on site","type":"draft"},
+      {"name":"order","title":"Order","type":"number"},
+      {"name":"year","title":"Year","type":"string","single":true},
+      {"name":"role","title":"My role","type":"string","single":true},
+      {"name":"projectType","title":"Project type","type":"string","single":true},
+      {"name":"status","title":"Outcome label","type":"string","single":true},
+      {"name":"summary","title":"Short description","type":"string"},
+      {"name":"technologies","title":"Technologies","type":"list"},
+      {"name":"primaryTags","title":"Primary tags for cards and filters","type":"list"},
+      {"name":"thumbnail","title":"Thumbnail URL","type":"string","single":true},
+      {"name":"previewVideo","title":"Silent preview URL","type":"string","single":true},
+      {"name":"github","title":"Project GitHub URL","type":"string","single":true},
+      {"name":"process","title":"Process steps","type":"list"},
+      {"name":"gallery","title":"Gallery","type":"block","fieldGroup":["galleryItem"]}
+    ]},
+    {"name":"experience","fileType":"md","fields":[{"name":"title","type":"string","required":true},{"name":"slug","type":"slug"},{"name":"role","type":"string"},{"name":"period","type":"string"},{"name":"dateDetail","type":"string"},{"name":"timelineEnd","type":"string"},{"name":"published","type":"draft"},{"name":"order","type":"number"}]},
+    {"name":"education","fileType":"md","fields":[{"name":"title","type":"string","required":true},{"name":"slug","type":"slug"},{"name":"institution","type":"string"},{"name":"period","type":"string"},{"name":"dateDetail","type":"string"},{"name":"timelineEnd","type":"string"},{"name":"published","type":"draft"},{"name":"order","type":"number"}]},
+    {"name":"certificate","fileType":"md","fields":[{"name":"title","type":"string","required":true},{"name":"slug","type":"slug"},{"name":"institution","type":"string"},{"name":"date","type":"string"},{"name":"image","type":"image"},{"name":"credential","type":"string"},{"name":"published","type":"draft"}]}
+  ]
+}
