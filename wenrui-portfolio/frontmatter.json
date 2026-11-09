@@ -27,7 +27,7 @@
       {"name":"technologies","title":"Technologies","type":"list"},
       {"name":"primaryTags","title":"Primary tags for cards and filters","type":"list"},
       {"name":"thumbnail","title":"Thumbnail URL","type":"string","single":true},
-      {"name":"previewVideo","title":"Silent preview URL","type":"string","single":true},
+      {"name":"previewVideo","title":"YouTube URL or local /videos/ preview","type":"string","single":true},
       {"name":"github","title":"Project GitHub URL","type":"string","single":true},
       {"name":"process","title":"Process steps","type":"list"},
       {"name":"gallery","title":"Gallery","type":"block","fieldGroup":["galleryItem"]}

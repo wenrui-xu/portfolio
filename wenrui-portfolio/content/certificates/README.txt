@@ -1,1 +1,0 @@
-Add one Markdown file per verified certificate. Front matter fields: `title`, `slug`, `institution`, `date`, `image`, `credential`, `published` and `type: certificate`. The website omits this README because it lacks front matter.

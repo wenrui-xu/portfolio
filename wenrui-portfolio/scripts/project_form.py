@@ -6,12 +6,14 @@ the same front matter format as the Vite build. Python needs no extra packages.
 """
 
 import json
+import os
 import re
 import shutil
 import subprocess
 import sys
 import unicodedata
 from pathlib import Path
+from urllib.parse import parse_qs, urlparse
 
 ROOT = Path(__file__).resolve().parent.parent
 EN_DIR = ROOT / "content" / "projects"
@@ -32,11 +34,31 @@ process.stdout.write(JSON.stringify({data,body:content}));
 """
 
 
+class Back(Exception):
+    """Return to the previous menu without saving the current form."""
+
+
+def clear_screen():
+    """Clear interactive terminals, while preserving output for redirected runs."""
+    if sys.stdout.isatty():
+        os.system("cls" if os.name == "nt" else "clear")
+
+
+def pause():
+    try:
+        input("\nPulsa Enter para volver al menú...")
+    except (EOFError, KeyboardInterrupt):
+        pass
+
+
 def answer(prompt):
     try:
-        return input(prompt).strip()
+        value = input(prompt).strip()
     except (EOFError, KeyboardInterrupt):
-        raise SystemExit("\nCancelado; no se han cambiado archivos.")
+        raise Back() from None
+    if value.lower() == ":b":
+        raise Back()
+    return value
 
 
 def text(label, default="", required=False):
@@ -125,13 +147,15 @@ def read_file(path):
 
 
 def lines(label):
-    print(f"{label} — puedes usar Markdown; termina con un . en una línea aparte.")
+    print(f"{label} — puedes usar Markdown; termina con un . en una línea aparte. :b vuelve sin guardar.")
     result = []
     while True:
         try:
             line = input()
         except (EOFError, KeyboardInterrupt):
-            raise SystemExit("\nCancelado; no se han cambiado archivos.")
+            raise Back() from None
+        if line.strip().lower() == ":b":
+            raise Back()
         if line == ".":
             return "\n".join(result).strip()
         result.append(line)
@@ -189,6 +213,8 @@ def edit_body(body, language):
         return body
     prefix, items = sections(body)
     while True:
+        clear_screen()
+        print("EDITAR CASO DE ESTUDIO — :b vuelve a la lista de proyectos sin guardar.\n")
         print(f"\nSecciones {language}: " + (", ".join(f"{i + 1} {item[0]}" for i, item in enumerate(items)) or "ninguna"))
         selection = answer("Número para editar, + para añadir, -N para borrar, Enter para terminar: ")
         if not selection:
@@ -226,6 +252,25 @@ def serialize(data, body, order):
     return f"---\n{front}\n---\n{body.strip()}\n"
 
 
+def youtube_id(value):
+    """Accept watch, short, live and embed links, but only on YouTube HTTPS hosts."""
+    parsed = urlparse(value)
+    if parsed.scheme != "https":
+        return None
+    host = (parsed.hostname or "").lower()
+    if host in ("youtu.be", "www.youtu.be"):
+        video_id = parsed.path.strip("/").split("/")[0]
+    elif host in ("youtube.com", "www.youtube.com", "m.youtube.com",
+                  "youtube-nocookie.com", "www.youtube-nocookie.com"):
+        video_id = parse_qs(parsed.query).get("v", [None])[0] if parsed.path == "/watch" else None
+        if not video_id:
+            match = re.fullmatch(r"/(?:embed|shorts|live)/([a-zA-Z0-9_-]{11})/?", parsed.path)
+            video_id = match.group(1) if match else None
+    else:
+        return None
+    return video_id if video_id and re.fullmatch(r"[a-zA-Z0-9_-]{11}", video_id) else None
+
+
 def validate(data, localized, body_en, body_es):
     selected = data.get("categories", [])
     if not selected or len(selected) != len(set(selected)) or any(category not in CATEGORIES for category in selected):
@@ -253,16 +298,18 @@ def validate(data, localized, body_en, body_es):
     unknown_tags = set(data.get("primaryTags", [])) - set(data["technologies"])
     if unknown_tags:
         raise ValueError("Primary tags must also appear in technologies: " + ", ".join(sorted(unknown_tags)))
-    for field in ("thumbnail", "previewVideo"):
-        path = data.get(field, "")
-        if path and (not path.startswith(("/images/", "/videos/")) or ".." in Path(path).parts):
-            raise ValueError(f"{field} must be a root-relative /images/ or /videos/ path.")
+    thumbnail = data.get("thumbnail", "")
+    preview = data.get("previewVideo", "")
+    if thumbnail and (not thumbnail.startswith("/images/") or ".." in Path(thumbnail).parts):
+        raise ValueError("La portada debe empezar por /images/.")
+    if preview and not youtube_id(preview) and (not preview.startswith("/videos/") or ".." in Path(preview).parts):
+        raise ValueError("La vista previa debe ser un enlace HTTPS de YouTube o un vídeo en /videos/.")
     for item in data.get("gallery", []):
         path = item.get("src", "")
         if not path.startswith(("/images/", "/videos/")) or ".." in Path(path).parts:
             raise ValueError("Gallery paths must start with /images/ or /videos/.")
     if data["published"]:
-        media = [data.get("thumbnail", ""), data.get("previewVideo", "")]
+        media = [thumbnail] + ([preview] if preview and not youtube_id(preview) else [])
         media += [item["src"] for item in data.get("gallery", [])]
         missing_media = [path for path in media if path and not (ROOT / "public" / path.lstrip("/")).is_file()]
         if missing_media:
@@ -293,42 +340,184 @@ def save(english_path, spanish_path, english, spanish):
     print("Contenido validado. Revisa la web y sube los cambios a tu repositorio privado.")
 
 
-def main():
+def main(delete_project=None):
     if not (ROOT / "node_modules" / "gray-matter").exists():
-        raise SystemExit("Ejecuta npm install en la carpeta del portfolio primero.")
-    files = sorted(EN_DIR.glob("*.md"))
-    print("FORMULARIO DE PROYECTOS — Enter mantiene el valor; - borra un campo opcional.")
-    print("1 Nuevo proyecto")
-    for index, file in enumerate(files, 2):
-        print(f"{index} Editar {file.stem}")
-    selection = answer("Elige un número: ")
-    if not selection.isdigit() or not 1 <= int(selection) <= len(files) + 1:
-        raise SystemExit("No has elegido un proyecto.")
-    creating = selection == "1"
-    if creating:
-        en, es = {}, {}
-        title = text("Título del proyecto (EN)", required=True)
-        slug = text("Slug para la URL", slugify(title), required=True)
-        if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", slug):
-            raise SystemExit("Slug must use lower-case letters, numbers and hyphens.")
-        english_path, spanish_path = EN_DIR / f"{slug}.md", ES_DIR / f"{slug}.md"
-        if english_path.exists() or spanish_path.exists():
-            raise SystemExit("This slug already exists. Choose the edit option instead.")
-        en.update(type="project", title=title, slug=slug)
-        es.update(slug=slug)
-        body_en = body_es = ""
-    else:
-        english_path = files[int(selection) - 2]
-        spanish_path = ES_DIR / english_path.name
-        en, body_en = read_file(english_path)
-        es, body_es = read_file(spanish_path)
-        if not spanish_path.exists():
-            print("Spanish translation is missing; this form will create it.")
-        en["slug"] = english_path.stem
-        es["slug"] = english_path.stem
+        raise RuntimeError("Ejecuta npm.cmd install en la carpeta del portfolio primero.")
+    while True:
+        files = sorted(EN_DIR.glob("*.md"))
+        clear_screen()
+        print("PROYECTOS — elige una opción\n")
+        print("1) Añadir proyecto")
+        print("2) Eliminar proyecto")
+        for index, file in enumerate(files, 3):
+            data, _ = read_file(file)
+            print(f"{index}) Editar «{data.get('title') or file.stem}»")
+        print("0) Volver al menú principal\n")
+        selection = answer("Elige un número: ")
+        if selection == "0":
+            return None
+        if selection == "2":
+            if delete_project is None:
+                print("La eliminación solo está disponible desde manage_portfolio.py.")
+                pause()
+                continue
+            try:
+                result = delete_project(files)
+            except Back:
+                continue
+            if result is not False:
+                pause()
+            continue
+        if selection.isdigit() and (selection == "1" or 3 <= int(selection) <= len(files) + 2):
+            try:
+                if selection == "1":
+                    return edit_project(files, selection)
+                return edit_existing_project(files[int(selection) - 3])
+            except Back:
+                continue
+        print("Elige un número de la lista.")
+        pause()
 
-    if not creating:
+
+def edit_existing_project(english_path):
+    """Open the actual Markdown content; validate after the user saves it."""
+    spanish_path = ES_DIR / english_path.name
+    clear_screen()
+    print(f"EDITAR PROYECTO — {english_path.stem}\n")
+    print(f"Inglés:  {english_path}")
+    print(f"Español: {spanish_path}")
+    print("Los archivos contienen los valores y el estudio de caso completos.")
+    print("Modifica el texto directamente en VS Code y guarda ambos archivos con Ctrl+S.\n")
+    editor = shutil.which("code") or shutil.which("code.cmd")
+    if not editor and os.name == "nt":
+        for base in (os.getenv("LOCALAPPDATA"), os.getenv("ProgramFiles"), os.getenv("ProgramFiles(x86)")):
+            if not base:
+                continue
+            for folder in ("Microsoft VS Code", "Microsoft VS Code Insiders"):
+                for candidate in (Path(base) / "Programs" / folder / "bin" / "code.cmd",
+                                  Path(base) / folder / "bin" / "code.cmd"):
+                    if candidate.is_file():
+                        editor = str(candidate)
+                        break
+                if editor:
+                    break
+            if editor:
+                break
+    if editor:
+        try:
+            subprocess.Popen([editor, "--reuse-window", str(english_path), str(spanish_path)],
+                             cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            print("He abierto los dos archivos en VS Code.")
+        except OSError:
+            print("No pude abrirlos automáticamente: ábrelos desde el explorador de VS Code.")
+    else:
+        print("Abre las rutas de arriba con Ctrl+clic o desde el explorador de VS Code.")
+    while True:
+        selected = answer("\nEnter = validar lo guardado · 0 = volver a proyectos: ")
+        if selected == "0":
+            return None
+        if selected:
+            print("Pulsa Enter para validar o escribe 0 para volver.")
+            continue
+        npm = shutil.which("npm")
+        if not npm:
+            print("No encuentro npm. Instala Node.js y ejecuta npm.cmd install.")
+            continue
+        result = subprocess.run([npm, "run", "content:check"], cwd=ROOT,
+                                capture_output=True, text=True, check=False)
+        if result.returncode:
+            print("\nHay un error de contenido. Corrígelo en los archivos abiertos, guarda y pulsa Enter de nuevo:\n")
+            print((result.stdout + result.stderr).strip())
+            continue
+        print("\nContenido validado. Los cambios ya están en los archivos del proyecto.")
+        return english_path
+
+
+def correct_project(en, es, body_en, body_es, error):
+    """Fix one field in memory and retry validation without repeating the form."""
+    clear_screen()
+    print(f"NO SE HA GUARDADO — {error}\n")
+    print("Todo lo que escribiste sigue aquí. Elige únicamente el dato que quieres corregir.")
+    fields = (
+        "Título (EN y ES)", "Categorías", "Estado del proyecto", "Orden", "Año",
+        "Tu papel (EN y ES)", "Tipo de proyecto (EN y ES)",
+        "Estado o resultado (EN y ES)", "Descripción de tarjeta (EN y ES)",
+        "Tecnologías", "Etiquetas principales", "Etapas del proceso (EN y ES)",
+        "Imagen de portada", "Vista previa en vídeo", "GitHub", "Galería",
+        "Caso de estudio (EN)", "Caso de estudio (ES)", "Publicación", "Destacado",
+    )
+    for index, label in enumerate(fields, 1):
+        print(f"{index:2}) {label}")
+    print(" 0) Volver a proyectos sin guardar")
+    selected = answer("Campo a corregir: ")
+    if selected == "0":
+        raise Back()
+    if not selected.isdigit() or not 1 <= int(selected) <= len(fields):
+        print("Elige un número de la lista.")
+        pause()
+        return body_en, body_es
+    selected = int(selected)
+    if selected == 1:
         en["title"] = text("Título (EN)", en.get("title", ""), required=True)
+        es["title"] = text("Título (ES)", es.get("title", ""), required=True)
+    elif selected == 2:
+        en["categories"] = category_list(en.get("categories", []))
+    elif selected == 3:
+        en["lifecycle"] = choice("Estado del proyecto", LIFECYCLES, en.get("lifecycle", "draft"))
+    elif selected == 4:
+        en["order"] = number("Orden", en.get("order", 1))
+    elif selected == 5:
+        en["year"] = text("Año", str(en.get("year", "")))
+    elif selected in (6, 7, 8, 9):
+        key, label = {6: ("role", "Tu papel"), 7: ("projectType", "Tipo de proyecto"),
+                      8: ("status", "Estado o resultado"), 9: ("summary", "Descripción")}[selected]
+        en[key] = text(f"{label} (EN)", en.get(key, ""))
+        es[key] = text(f"{label} (ES)", es.get(key, ""))
+    elif selected == 10:
+        en["technologies"] = comma_list("Tecnologías", en.get("technologies", []))
+    elif selected == 11:
+        en["primaryTags"] = comma_list("Etiquetas principales", en.get("primaryTags", []))
+    elif selected == 12:
+        en["process"] = comma_list("Etapas del proceso (EN)", en.get("process", []))
+        es["process"] = comma_list("Etapas del proceso (ES)", es.get("process", []))
+    elif selected in (13, 14, 15):
+        key, label = {13: ("thumbnail", "Imagen de portada"),
+                      14: ("previewVideo", "Vista previa en vídeo"),
+                      15: ("github", "GitHub")}[selected]
+        print("Escribe - para borrar el valor actual. Vista previa acepta enlaces de YouTube.")
+        en[key] = text(label, en.get(key, ""))
+    elif selected == 16:
+        en["gallery"], es["gallery"] = gallery_items(en.get("gallery", []), es.get("gallery", []))
+    elif selected == 17:
+        body_en = edit_body(body_en, "EN")
+    elif selected == 18:
+        body_es = edit_body(body_es, "ES")
+    elif selected == 19:
+        en["published"] = yes_no("¿Publicar este proyecto?", en.get("published", False))
+        if not en["published"]:
+            en["featured"] = False
+    elif selected == 20:
+        en["featured"] = yes_no("¿Destacar en Home y Work?", en.get("featured", False))
+        if en["featured"]:
+            en["featuredOrder"] = number("Posición en el carrusel", en.get("featuredOrder", en.get("order", 1)))
+    return body_en, body_es
+
+
+def edit_project(files, selection):
+    clear_screen()
+    print("FORMULARIO DE PROYECTOS — Enter mantiene el valor; - borra un campo opcional.")
+    print("Escribe :b en cualquier pregunta para volver a la lista sin guardar.\n")
+    en, es = {}, {}
+    title = text("Título del proyecto (EN)", required=True)
+    slug = text("Slug para la URL", slugify(title), required=True)
+    if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", slug):
+        raise ValueError("El identificador solo admite letras minúsculas, números y guiones.")
+    english_path, spanish_path = EN_DIR / f"{slug}.md", ES_DIR / f"{slug}.md"
+    if english_path.exists() or spanish_path.exists():
+        raise ValueError("Ese identificador ya existe. Elige editar el proyecto existente.")
+    en.update(type="project", title=title, slug=slug)
+    es.update(slug=slug)
+    body_en = body_es = ""
     es["title"] = text("Título (ES)", es.get("title", en["title"]), required=True)
     en["categories"] = category_list(en.get("categories", [en.get("category", "games")]))
     en.pop("category", None)
@@ -347,31 +536,31 @@ def main():
     en["primaryTags"] = comma_list("Etiquetas principales (elige entre las tecnologías)", en.get("primaryTags", []))
     en["process"] = comma_list("Etapas del proceso (EN)", en.get("process", []))
     es["process"] = comma_list("Etapas del proceso (ES)", es.get("process", []))
-    for field, label in (("thumbnail", "Imagen de portada"), ("previewVideo", "Vista previa en vídeo sin sonido"), ("github", "GitHub del proyecto")):
+    for field, label in (("thumbnail", "Imagen de portada"), ("previewVideo", "Enlace de YouTube o vídeo local /videos/..."), ("github", "GitHub del proyecto")):
         en[field] = text(label, en.get(field, ""))
     gallery_en, gallery_es = gallery_items(en.get("gallery", []), es.get("gallery"))
     en["gallery"] = gallery_en
     if gallery_es is not None:
         es["gallery"] = gallery_es
-    if creating:
-        if yes_no("¿Escribir ahora el caso de estudio?", en["lifecycle"] != "draft"):
-            body_en, body_es = new_bodies()
-    else:
-        body_en = edit_body(body_en, "EN")
-        body_es = edit_body(body_es, "ES")
+    if yes_no("¿Escribir ahora el caso de estudio?", en["lifecycle"] != "draft"):
+        body_en, body_es = new_bodies()
     en["published"] = yes_no("¿Publicar este proyecto terminado o cancelado?", en.get("published", False))
     en["featured"] = yes_no("¿Destacarlo en Home y Work?", en.get("featured", False)) if en["published"] else False
     if en["featured"]:
         en["featuredOrder"] = number("Posición en el carrusel de destacados", en.get("featuredOrder", en["order"]))
     for key in ("featured", "featuredOrder", "published", "lifecycle", "category", "categories", "order", "technologies", "primaryTags", "thumbnail", "previewVideo", "github"):
         es.pop(key, None)
-    validate(en, es, body_en, body_es)
-    print(f"\nPreview: {en['title']} · {', '.join(en['categories'])} · {en['lifecycle']} · {'published' if en['published'] else 'draft'}")
-    if not yes_no("¿Guardar estos archivos?"):
-        print("No se han cambiado archivos.")
-        return
-    save(english_path, spanish_path, serialize(en, body_en, FIELD_ORDER), serialize(es, body_es, ES_FIELDS))
-    return english_path
+    while True:
+        try:
+            validate(en, es, body_en, body_es)
+            print(f"\nVista previa: {en['title']} · {', '.join(en['categories'])} · {en['lifecycle']} · {'publicado' if en['published'] else 'borrador'}")
+            if not yes_no("¿Guardar estos archivos?"):
+                print("No se han cambiado archivos.")
+                return None
+            save(english_path, spanish_path, serialize(en, body_en, FIELD_ORDER), serialize(es, body_es, ES_FIELDS))
+            return english_path
+        except (ValueError, RuntimeError) as error:
+            body_en, body_es = correct_project(en, es, body_en, body_es, error)
 
 
 if __name__ == "__main__":

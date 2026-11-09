@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import matter from 'gray-matter';
+import {youtubeVideoId} from '../src/data/video.js';
 
 const root = path.resolve(import.meta.dirname, '..');
 const kinds = ['projects', 'experience', 'education', 'certificates'];
@@ -42,6 +43,10 @@ export function buildContent() {
         if (!Array.isArray(data.technologies) || !data.technologies.length) throw new Error(`Missing technologies: ${file}`);
         if (!Array.isArray(data.primaryTags) || !data.primaryTags.length || data.primaryTags.some(tag => !data.technologies.includes(tag))) throw new Error(`Primary tags must be selected from technologies: ${file}`);
         if (data.featured && data.featuredOrder !== undefined && (!Number.isInteger(data.featuredOrder) || data.featuredOrder < 1)) throw new Error(`Invalid featuredOrder: ${file}`);
+        if (data.previewVideo && !youtubeVideoId(data.previewVideo) &&
+            (!/^\/videos\/(?!.*\.\.)[^?#]+$/.test(data.previewVideo) || !fs.existsSync(path.join(root, 'public', data.previewVideo.slice(1))))) {
+          throw new Error(`previewVideo must be an HTTPS YouTube URL or an existing /videos/ file: ${file}`);
+        }
       }
       return {...data, body, source: `${kind}/${file}`};
     }).filter(Boolean);

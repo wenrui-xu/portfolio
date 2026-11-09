@@ -53,7 +53,7 @@ The production files are written to `dist/`.
 | Interface copy | `content/ui.json` |
 | Images, icons and PDF | `public/` |
 
-You can also open `manage_portfolio.py` in VS Code and click **▶ Run Python File**. Its menu can add projects, select featured work, change the résumé PDF, add journey entries or certificates, and edit links. The project supports the Front Matter CMS extension through `frontmatter.json`.
+You can also open `manage_portfolio.py` in VS Code and click **▶ Run Python File**. Its menu can add, edit or delete projects, select featured work, change the résumé PDF, add journey entries or certificates, and edit links. Project titles are read from `content/projects/`; deletion asks for confirmation and the exact slug. Choose `0` to leave a menu or type `:b` in any form to go back without saving. The project supports the Front Matter CMS extension through `frontmatter.json`.
 
 Keep sample projects as templates with `published: false`. Only published projects appear on the site; `featured: true` adds a published project to the featured carousel. Add its Spanish translation before publishing.
 
@@ -103,7 +103,7 @@ Los archivos listos para desplegar quedan en `dist/`.
 | Textos de la interfaz | `content/ui.json` |
 | Imágenes, iconos y PDF | `public/` |
 
-También puedes abrir `manage_portfolio.py` en VS Code y pulsar **▶ Ejecutar archivo Python**. Su menú permite añadir proyectos, elegir destacados, cambiar el PDF, añadir entradas al recorrido o certificados y modificar enlaces. `frontmatter.json` configura la extensión Front Matter CMS.
+También puedes abrir `manage_portfolio.py` en VS Code y pulsar **▶ Ejecutar archivo Python**. Su menú permite añadir, editar o eliminar proyectos, elegir destacados, cambiar el PDF, añadir entradas al recorrido o certificados y modificar enlaces. Lee los títulos desde `content/projects/`; al eliminar pide confirmación y el identificador exacto. Usa `0` para salir de un menú o `:b` en cualquier formulario para volver al menú anterior sin guardar. `frontmatter.json` configura la extensión Front Matter CMS.
 
 Puedes conservar proyectos de ejemplo como plantillas con `published: false`. Solo aparecen los publicados; `featured: true` añade un proyecto publicado al carrusel. Prepara su traducción al español antes de publicarlo.
 

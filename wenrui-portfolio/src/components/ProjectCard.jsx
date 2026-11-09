@@ -1,6 +1,7 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import {technologyIcons} from '../data/content';
+import {youtubeVideoId} from '../data/video';
 import {useLocale} from '../locale';
 
 export function PendingImage({label='Image pending',className=''}) {
@@ -13,10 +14,13 @@ export function PendingImage({label='Image pending',className=''}) {
 
 export function ProjectMedia({project, large=false}) {
   const {t}=useLocale();
-  const image=project.thumbnail;
-  return <div className={`v-project-media v-media-${project.categories[0]}${large?' v-media-large':''}`}>
-    {image ? <img src={image} alt={`${t.card.imageFor} ${project.title}`}/> : <PendingImage label={`${project.title}: ${t.card.imagePending}`}/>}
-    {project.previewVideo && <video className="v-card-preview" src={project.previewVideo} playsInline muted loop preload="none" aria-hidden="true"/>}
+  const youtubeId=youtubeVideoId(project.previewVideo);
+  const image=project.thumbnail || (youtubeId ? `https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg` : '');
+  return <div className={`v-project-media v-media-${project.categories[0]}${large?' v-media-large':''}${large&&youtubeId?' v-media-embed':''}`}>
+    {large&&youtubeId ? <iframe className="v-project-embed" src={`https://www.youtube-nocookie.com/embed/${youtubeId}?rel=0&playsinline=1`} title={`${project.title} video`} loading="lazy" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen/> : <>
+      {image ? <img src={image} alt={`${t.card.imageFor} ${project.title}`}/> : <PendingImage label={`${project.title}: ${t.card.imagePending}`}/>}
+      {project.previewVideo&&!youtubeId&&<video className="v-card-preview" src={project.previewVideo} playsInline muted loop preload="none" aria-hidden="true"/>}
+    </>}
   </div>;
 }
 

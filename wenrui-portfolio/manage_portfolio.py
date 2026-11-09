@@ -44,9 +44,9 @@ def save_site(data):
 
 
 def add_or_edit_project():
-    path = form.main()
+    path = form.main(delete_project=delete_project)
     if path is None:
-        return
+        return False
     data, _ = form.read_file(path)
     icons = json.loads(ICONS_FILE.read_text(encoding="utf-8"))
     unknown = [name for name in data.get("technologies", []) if name not in icons]
@@ -99,21 +99,62 @@ def add_or_edit_project():
     print("Iconos añadidos a las tarjetas y a los filtros técnicos.")
 
 
-def select_file(paths, label):
+def select_file(paths, label, back_label="menú principal"):
     if not paths:
         print("Todavía no hay entradas para elegir.")
         return None
-    print(f"\n{label}:")
+    form.clear_screen()
+    print(f"{label} — elige una opción\n")
     for index, path in enumerate(paths, 1):
         data, _ = form.read_file(path)
         print(f"  {index}) {data.get('title', path.stem)} ({path.stem})"
               f"{' ★' if data.get('featured') else ''}")
-    selection = form.answer("Número (Enter para cancelar): ")
-    if not selection:
+    print(f"  0) Volver a {back_label}\n")
+    selection = form.answer("Número: ")
+    if selection in ("", "0"):
         return None
     if not selection.isdigit() or not 1 <= int(selection) <= len(paths):
         raise ValueError("Elige un número de la lista.")
     return paths[int(selection) - 1]
+
+
+def delete_project(paths):
+    """Delete both translations after explicit confirmation; restore on failure."""
+    path = select_file(paths, "ELIMINAR PROYECTO", "proyectos")
+    if path is None:
+        return False
+    data, _ = form.read_file(path)
+    title = data.get("title") or path.stem
+    spanish_path = ROOT / "content" / "es" / "projects" / path.name
+    originals = {item: item.read_bytes() for item in (path, spanish_path) if item.exists()}
+    print(f"\nSe eliminarán los archivos EN y ES de «{title}» ({path.stem}).")
+    print("Las imágenes, vídeos y el código del proyecto no se borrarán.")
+    link = f"/work/{path.stem}"
+    references = [other.relative_to(ROOT) for other in (ROOT / "content").rglob("*.md")
+                  if other not in originals and link in other.read_text(encoding="utf-8")]
+    if references:
+        print("\nATENCIÓN: otros contenidos enlazan a este proyecto. Revisa después:")
+        for reference in references:
+            print(f"  - {reference}")
+    if not form.yes_no("¿Seguro que quieres eliminar este proyecto?", False):
+        print("Eliminación cancelada.")
+        form.pause()
+        return False
+    if form.answer(f"Escribe exactamente {path.stem} para confirmar: ") != path.stem:
+        print("Eliminación cancelada: el identificador no coincide.")
+        form.pause()
+        return False
+    try:
+        for item in originals:
+            item.unlink()
+        checked_command("npm", "run", "content:check")
+    except Exception:
+        for item, content in originals.items():
+            item.write_bytes(content)
+        checked_command("npm", "run", "content:check")
+        raise
+    print(f"Proyecto «{title}» eliminado. Puedes recuperarlo desde el historial de Git si lo necesitas.")
+    return True
 
 
 def set_frontmatter_value(text, key, value):
@@ -135,7 +176,7 @@ def feature_project():
     paths = sorted((ROOT / "content" / "projects").glob("*.md"))
     path = select_file(paths, "Proyectos")
     if path is None:
-        return
+        return False
     data, _ = form.read_file(path)
     if not data.get("published"):
         raise ValueError("Primero publica el proyecto desde la opción 1; los borradores no se destacan.")
@@ -331,7 +372,8 @@ def edit_resume():
 
 def main():
     while True:
-        print("\nGESTOR DEL PORTFOLIO")
+        form.clear_screen()
+        print("GESTOR DEL PORTFOLIO\n")
         print("1) Añadir o editar proyectos")
         print("2) Destacar proyectos")
         print("3) Cambiar el PDF del CV")
@@ -339,7 +381,11 @@ def main():
         print("5) Añadir certificados")
         print("6) Modificar enlaces")
         print("0) Salir")
-        selected = form.answer("Elige una opción: ")
+        print("\nEscribe :b para volver al menú anterior sin guardar.")
+        try:
+            selected = form.answer("Elige una opción: ")
+        except form.Back:
+            return
         if selected == "0":
             return
         actions = {"1":add_or_edit_project,"2":feature_project,"3":edit_resume,
@@ -347,11 +393,19 @@ def main():
         action = actions.get(selected)
         if not action:
             print("Elige un número del menú.")
+            form.pause()
             continue
+        result = None
         try:
-            action()
+            form.clear_screen()
+            print("Escribe :b en cualquier pregunta para volver atrás sin guardar.\n")
+            result = action()
+        except form.Back:
+            continue
         except (ValueError, RuntimeError) as error:
             print(f"Error: {error}")
+        if result is not False:
+            form.pause()
 
 
 if __name__ == "__main__":

@@ -5,8 +5,8 @@
     "email": "sabrina_xu@hotmail.es"
   },
   "resume": {
-    "path": "/resume/Wenrui-Xu-CV.pdf",
-    "downloadName": "Wenrui-Xu-CV.pdf"
+    "path": "/resume/Curriculum2026.pdf",
+    "downloadName": "Curriculum2026.pdf"
   },
   "showreelYoutubeId": "",
   "showreelPending": {
@@ -14,17 +14,75 @@
     "message": "Good things take a little render time."
   },
   "toolbox": [
-    {"label": "Game development", "technologies": ["Unity", "C#", "Blender"]},
-    {"label": "Apps & software", "technologies": ["Kotlin", "Java", "C++"]},
-    {"label": "Web development", "technologies": ["HTML", "CSS", "JavaScript", "PHP"]},
-    {"label": "Data & automation", "technologies": ["Python", "SQL", "JSON"]},
-    {"label": "Generative AI", "technologies": ["ComfyUI"]},
-    {"label": "Office tools", "technologies": ["Microsoft Office"]}
+    {
+      "label": "Game development",
+      "technologies": [
+        "Unity",
+        "C#",
+        "Blender"
+      ]
+    },
+    {
+      "label": "Apps & software",
+      "technologies": [
+        "Kotlin",
+        "Java",
+        "C++"
+      ]
+    },
+    {
+      "label": "Web development",
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "PHP"
+      ]
+    },
+    {
+      "label": "Data & automation",
+      "technologies": [
+        "Python",
+        "SQL",
+        "JSON"
+      ]
+    },
+    {
+      "label": "Generative AI",
+      "technologies": [
+        "ComfyUI"
+      ]
+    },
+    {
+      "label": "Office tools",
+      "technologies": [
+        "Microsoft Office"
+      ]
+    }
   ],
   "languages": [
-    {"name": "Spanish", "level": "Native"},
-    {"name": "Chinese", "level": "Native"},
-    {"name": "English", "level": "B2", "certificate": {"title": "B2 First (First Certificate in English)", "institution": "Cambridge University Press & Assessment"}},
-    {"name": "German", "level": "A2", "certificate": {"title": "Certificado de Superación del Nivel Básico en Alemán A2"}}
+    {
+      "name": "Spanish",
+      "level": "Native"
+    },
+    {
+      "name": "Chinese",
+      "level": "Native"
+    },
+    {
+      "name": "English",
+      "level": "B2",
+      "certificate": {
+        "title": "B2 First (First Certificate in English)",
+        "institution": "Cambridge University Press & Assessment"
+      }
+    },
+    {
+      "name": "German",
+      "level": "A2",
+      "certificate": {
+        "title": "Certificado de Superación del Nivel Básico en Alemán A2"
+      }
+    }
   ]
 }

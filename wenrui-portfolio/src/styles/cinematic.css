@@ -118,6 +118,8 @@ button:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid #ff
 .v-project-media{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;border-bottom:1px solid #886556;background:radial-gradient(ellipse at 84% 25%,#74483775,transparent 40%),linear-gradient(135deg,#261d1a,#4c3830)}
 .v-project-media::after{content:'';position:absolute;z-index:2;right:14px;top:14px;width:36px;height:10px;background:repeating-linear-gradient(90deg,#e8bca6 0 8px,transparent 8px 13px);opacity:.85}
 .v-project-media img,.v-card-preview{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.v-media-embed{min-height:200px}
+.v-project-embed{position:absolute;inset:0;width:100%;height:100%;border:0;z-index:1}
 .v-card-preview{opacity:0;transition:opacity .25s}
 .v-project-card:hover .v-card-preview{opacity:1}
 .v-media-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;background:linear-gradient(130deg,#4a342db8,#1b1619c7);color:#e7c4b2;text-align:center}
