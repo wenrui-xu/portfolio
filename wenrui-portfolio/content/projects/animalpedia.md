@@ -5,7 +5,7 @@ slug: animalpedia
 categories: [apps]
 lifecycle: completed
 featured: false
-published: false
+published: true
 order: 5
 year: '2026'
 role: Documentation, planning and Android features in a two-person team

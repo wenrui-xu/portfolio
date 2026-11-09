@@ -5,7 +5,7 @@ slug: helicopter-lighting-scene
 categories: [games, creative-tech]
 lifecycle: completed
 featured: false
-published: false
+published: true
 order: 4
 year: '2021'
 role: Solo Unity interaction, lighting and shader work

@@ -15,7 +15,7 @@ summary: An Android planning app with adapted task flows, visual routines and tu
 technologies: [Kotlin, Android, Jetpack Compose, Room, Vosk, Gemini, AI]
 primaryTags: [Kotlin, Jetpack Compose, AI]
 thumbnail: ''
-previewVideo: ''
+previewVideo: 'https://www.youtube.com/watch?v=nAiH9rMR5EQ&feature=youtu.be'
 github: ''
 process: [User needs and research, UX/UI in Figma, Kotlin and Compose development, Voice and API integration, User testing]
 gallery: []

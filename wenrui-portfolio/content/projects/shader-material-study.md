@@ -5,7 +5,7 @@ slug: shader-material-study
 categories: [creative-tech]
 lifecycle: completed
 featured: false
-published: false
+published: true
 order: 7
 year: '2022'
 role: Solo shader and material exploration

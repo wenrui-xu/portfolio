@@ -5,7 +5,7 @@ slug: camping-app
 categories: [apps]
 lifecycle: completed
 featured: false
-published: false
+published: true
 order: 6
 year: '2026'
 role: Generalitat API integration, card UI and map connection in a two-person team

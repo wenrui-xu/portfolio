@@ -5,7 +5,7 @@ slug: benalet
 categories: [games, creative-tech]
 lifecycle: completed
 featured: false
-published: false
+published: true
 order: 2
 year: '2026'
 role: VR interaction and gameplay development in a two-person team

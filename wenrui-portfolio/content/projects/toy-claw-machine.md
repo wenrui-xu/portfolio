@@ -5,7 +5,7 @@ slug: toy-claw-machine
 categories: [games]
 lifecycle: completed
 featured: false
-published: false
+published: true
 order: 3
 year: '2022'
 role: Solo Unity prototype
