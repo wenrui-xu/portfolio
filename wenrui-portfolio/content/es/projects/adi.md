@@ -1,43 +1,43 @@
 ---
 slug: adi
-role: Diseño de producto y desarrollo Android nativo
+role: Diseño de producto, desarrollo Android y pruebas con usuarios de forma individual
 projectType: Proyecto de fin de grado · App Android
 status: Finalizado · defendido en octubre de 2026
-summary: Una aplicación Android nativa para organizar tareas y rutinas con experiencias adaptadas para TDAH y autismo.
-process: [Investigación, UX/UI, Desarrollo Android, Integración de IA, Pruebas con usuarios]
+summary: Una app Android de planificación con tareas adaptadas, rutinas visuales y apoyo para tutores de personas autistas o con TDAH.
+process: [Necesidades de usuario e investigación, UX/UI en Figma, Desarrollo con Kotlin y Compose, Integración de voz y APIs, Pruebas con usuarios]
 ---
 ## Resumen
 
-ADI reúne tareas, rutinas recurrentes, secuencias visuales y vistas de calendario en una aplicación Android nativa. Permite el uso personal y ofrece modos adaptados para personas autistas, con TDAH y tutores.
+ADI (Asistente Digital Inteligente) es mi TFG individual de Ingeniería Multimedia: una aplicación Android nativa diseñada para hacer más accesible la planificación diaria de personas autistas, con TDAH y sus tutores. Reúne tareas y subtareas, rutinas recurrentes, secuencias con pictogramas y vistas de calendario de día, semana y mes. El modo tutor dispone de controles adicionales protegidos con un PIN.
 
-Desarrollé ADI como proyecto de fin de grado de Ingeniería Multimedia y lo defendí en octubre de 2026.
+También incluye recordatorios, estadísticas de progreso, verificación de tareas mediante fotografías, interacción por texto y voz y vistas configurables con distintos niveles de detalle. Lo desarrollé entre 2025 y 2026, lo completé en 2026 y lo defendí en la Universitat de València en octubre de 2026 con una calificación de 9/10.
 
 ## Mi papel
 
-Trabajé en los flujos de interacción, el diseño visual, la implementación en Kotlin, los datos locales y las pruebas con usuarios. La interfaz utiliza Jetpack Compose y el almacenamiento local, Room.
+Diseñé y desarrollé ADI de forma individual, desde los flujos de usuario y los prototipos en Figma hasta la implementación Android y la evaluación. Utilicé Kotlin y Jetpack Compose para la interfaz y Room para guardar los datos localmente. Integré pictogramas de ARASAAC, Vosk y el reconocimiento de voz de Android, además de la API de Gemini para interpretar peticiones en lenguaje natural sobre tareas y secuencias. También preparé y realicé pruebas con usuarios y analicé sus comentarios.
 
 ## Retos
 
 ### Problema
 
-La misma tarea puede necesitar niveles de detalle muy distintos según la persona que utilice la aplicación.
+Un mismo sistema de planificación debía responder a distintas necesidades cognitivas sin obligar a todo el mundo a utilizar una interfaz densa.
 
 ### Por qué
 
-Una pantalla densa puede dificultar la planificación. Los controles para tutores y las rutinas deben seguir siendo claros al cambiar de modo.
+Las tareas pueden requerir pasos pequeños, pictogramas o apoyo de un tutor. La entrada por voz y las rutinas recurrentes añaden estados y posibles puntos de confusión.
 
 ### Solución
 
-Construí vistas de tareas adaptadas, secuencias con pictogramas y controles para tutores. Después probé con usuarios la creación de tareas, los controles de voz, las recurrencias y la navegación hacia atrás.
+Construí vistas configurables de tareas y calendario, secuencias visuales y un modo tutor diferenciado. Probé con usuarios la creación de tareas, la entrada por voz, las subtareas repetidas, la finalización de rutinas y la navegación, y utilicé sus observaciones para detectar mejoras.
 
 ### Resultado
 
-Las sesiones revelaron problemas concretos en las indicaciones de voz, las subtareas repetidas, la finalización de rutinas y la navegación. Estas observaciones guiaron iteraciones posteriores; no presento resultados cuantitativos aquí.
+Las sesiones identificaron problemas concretos en las señales de voz, las subtareas duplicadas, la finalización de rutinas y el regreso a pantallas anteriores. Sus resultados guiaron cambios y documentaron mejoras pendientes.
 
 ## Proceso
 
-La investigación y las decisiones de interfaz guiaron la implementación Android. Exploré la interpretación asistida por IA y el reconocimiento de voz sin conexión como herramientas de apoyo, seguidos de sesiones con usuarios y cambios basados en los problemas observados.
+Partí de las necesidades de los usuarios y del diseño de interacción, prototipé la interfaz en Figma, implementé la app con Kotlin y Compose e integré almacenamiento local, pictogramas, voz e interpretación asistida por IA. Por último, realicé sesiones con usuarios y revisé los problemas que encontraron.
 
 ## Resultados de las pruebas
 
-Las pruebas con usuarios dieron a la siguiente iteración una lista clara de problemas que resolver. Añadiré capturas definitivas, un enlace público al código y resultados medidos cuando estén disponibles.
+La app se completó y defendió con una calificación de 9/10. Las pruebas proporcionaron observaciones concretas, sin atribuirles porcentajes de mejora no medidos. [Ver la demostración de ADI ↗](https://youtu.be/nAiH9rMR5EQ). El código no está disponible públicamente; se podrán añadir capturas tras revisarlas.
