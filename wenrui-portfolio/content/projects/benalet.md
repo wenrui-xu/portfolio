@@ -14,7 +14,7 @@ status: Playable university prototype · 2026
 summary: A timed VR fair-stall game with moving duck targets, a bow, a pistol and voice-controlled rounds.
 technologies: [Unity, 'C#']
 primaryTags: [Unity, 'C#']
-thumbnail: ''
+thumbnail: 'public\images\projects\benalet-banner.png'
 previewVideo: ''
 github: ''
 process: [Scene setup, VR interactions, Voice controls, Gameplay integration]

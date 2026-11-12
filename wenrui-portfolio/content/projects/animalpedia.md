@@ -14,7 +14,7 @@ status: Completed · university project
 summary: An Android animal guide with a date-based animal of the day, image search and local user data.
 technologies: [Kotlin, Android, Room]
 primaryTags: [Kotlin, Android, Room]
-thumbnail: ''
+thumbnail: 'public\images\projects\animalpedia-banner.png'
 previewVideo: 'https://youtu.be/tgQoQplQvf0'
 github: 'https://github.com/Alpacakohai/adm-lab'
 process: [Planning and documentation, Android features, Pixabay integration, Bug fixing]

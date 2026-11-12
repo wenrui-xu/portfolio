@@ -10,11 +10,11 @@ order: 1
 year: '2025–2026'
 role: Solo product design, Android development and user testing
 projectType: Final-year project · Android app
-status: Completed · defended October 2026
+status: Completed · university project
 summary: An Android planning app with adapted task flows, visual routines and tutor support for autistic and ADHD users.
 technologies: [Kotlin, Android, Jetpack Compose, Room, Vosk, Gemini, AI]
 primaryTags: [Kotlin, Jetpack Compose, AI]
-thumbnail: ''
+thumbnail: 'public\images\projects\adi-banner.png'
 previewVideo: 'https://www.youtube.com/watch?v=nAiH9rMR5EQ&feature=youtu.be'
 github: ''
 process: [User needs and research, UX/UI in Figma, Kotlin and Compose development, Voice and API integration, User testing]

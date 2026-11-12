@@ -14,7 +14,7 @@ status: Demonstrated prototype · 2021
 summary: A controllable helicopter scene combining first- and third-person views with baked lighting and custom shaders.
 technologies: [Unity, 'C#']
 primaryTags: [Unity, 'C#']
-thumbnail: ''
+thumbnail: 'public\images\projects\helicopter-unity.png'
 previewVideo: 'https://youtu.be/wunzRa6l6bU?t=261'
 github: ''
 process: [Helicopter controls, Scene traversal, Baked lighting, Shader work]

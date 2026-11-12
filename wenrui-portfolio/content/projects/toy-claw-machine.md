@@ -14,7 +14,7 @@ status: Prototype demonstrated · 2022
 summary: A compact arcade claw-machine prototype focused on a self-contained interaction.
 technologies: [Unity, 'C#']
 primaryTags: [Unity, 'C#']
-thumbnail: ''
+thumbnail: 'public\images\projects\toyclaw-machine.png'
 previewVideo: 'https://youtu.be/2Ejamp84Ep4'
 github: ''
 process: [Interaction prototype, Unity implementation, Demo]

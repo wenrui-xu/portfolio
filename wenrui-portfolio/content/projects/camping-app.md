@@ -14,7 +14,7 @@ status: Completed · university project
 summary: An Android app that presents camping data from the Generalitat in browsable cards and on a map.
 technologies: [Kotlin, Android]
 primaryTags: [Kotlin, Android]
-thumbnail: ''
+thumbnail: 'public\images\projects\campingapps-banner.png'
 previewVideo: 'https://youtu.be/fOe8LMVvm80'
 github: 'https://github.com/Alpacakohai/adm-lab'
 process: [Data integration, Card interface, Map connection, Team integration]
