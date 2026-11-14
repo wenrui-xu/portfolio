@@ -4,7 +4,7 @@ title: The Legends of Ashenvale
 slug: the-legends-of-ashenvale
 categories: [games]
 lifecycle: completed
-featured: false
+featured: true
 published: true
 order: 1
 year: '2025'
@@ -19,6 +19,7 @@ previewVideo: "https://youtu.be/JyPZqnFRGDM"
 github: ''
 process: [UI implementation, Gameplay systems, Unity integration, Debugging and polish]
 gallery: []
+featuredOrder: 2
 ---
 ## Overview
 
