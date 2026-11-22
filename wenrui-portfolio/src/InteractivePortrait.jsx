@@ -1,5 +1,6 @@
 import React, {useEffect, useRef} from 'react';
 import {useLocale} from './locale';
+import {publicAsset} from './data/publicAsset';
 
 const WIDTH = 1370;
 const HEIGHT = 1148;
@@ -267,8 +268,8 @@ export default function InteractivePortrait() {
       irises = EYES.map(eye => makeIrisSprite(irisAtlas, eye));
       schedule();
     };
-    image.src = '/images/hero-wenrui-studio.png';
-    irisAtlas.src = '/images/wenrui-irises-atlas.png';
+    image.src = publicAsset('/images/hero-wenrui-studio.png');
+    irisAtlas.src = publicAsset('/images/wenrui-irises-atlas.png');
     return () => {
       destroyed = true;
       cancelAnimationFrame(frame);

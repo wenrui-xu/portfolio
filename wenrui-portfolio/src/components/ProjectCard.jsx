@@ -3,6 +3,7 @@ import {Link} from 'react-router-dom';
 import {technologyIcons} from '../data/content';
 import {youtubeVideoId} from '../data/video';
 import {useLocale} from '../locale';
+import {publicAsset} from '../data/publicAsset';
 
 export function PendingImage({label='Image pending',className=''}) {
   const {t}=useLocale();
@@ -18,8 +19,8 @@ export function ProjectMedia({project, large=false}) {
   const image=project.thumbnail || (youtubeId ? `https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg` : '');
   return <div className={`v-project-media v-media-${project.categories[0]}${large?' v-media-large':''}${large&&youtubeId?' v-media-embed':''}`}>
     {large&&youtubeId ? <iframe className="v-project-embed" src={`https://www.youtube-nocookie.com/embed/${youtubeId}?rel=0&playsinline=1`} title={`${project.title} video`} loading="lazy" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen/> : <>
-      {image ? <img src={image} alt={`${t.card.imageFor} ${project.title}`}/> : <PendingImage label={`${project.title}: ${t.card.imagePending}`}/>}
-      {project.previewVideo&&!youtubeId&&<video className="v-card-preview" src={project.previewVideo} playsInline muted loop preload="none" aria-hidden="true"/>}
+      {image ? <img src={publicAsset(image)} alt={`${t.card.imageFor} ${project.title}`}/> : <PendingImage label={`${project.title}: ${t.card.imagePending}`}/>}
+      {project.previewVideo&&!youtubeId&&<video className="v-card-preview" src={publicAsset(project.previewVideo)} playsInline muted loop preload="none" aria-hidden="true"/>}
     </>}
   </div>;
 }
@@ -28,6 +29,6 @@ export default function ProjectCard({project}) {
   const {t}=useLocale();
   return <Link className="v-project-card" to={`/work/${project.slug}`} onPointerEnter={event=>event.currentTarget.querySelector('video')?.play().catch(()=>{})} onPointerLeave={event=>{const video=event.currentTarget.querySelector('video');if(video){video.pause();video.currentTime=0}}}>
     <ProjectMedia project={project}/>
-    <div className="v-card-content"><div className="v-card-badges"><div className="v-card-categories">{project.categories.map(category=><span className="v-category-pill" key={category}>{t.categories[category]}</span>)}</div><div className="v-tag-list">{project.primaryTags.slice(0,3).map(tech=><span className="v-tag" key={tech}>{technologyIcons[tech]&&<img src={`/icons/${technologyIcons[tech]}.svg`} alt=""/>}{t.tags?.[tech]||tech}</span>)}</div></div><div className="v-card-title"><h3>{project.title}</h3><span className="v-card-arrow" aria-hidden="true">↗</span></div><p>{project.summary}</p><div className="v-card-end"><span className="v-card-status">{project.status}</span><span className="v-view-project">{t.card.view}</span></div></div>
+    <div className="v-card-content"><div className="v-card-badges"><div className="v-card-categories">{project.categories.map(category=><span className="v-category-pill" key={category}>{t.categories[category]}</span>)}</div><div className="v-tag-list">{project.primaryTags.slice(0,3).map(tech=><span className="v-tag" key={tech}>{technologyIcons[tech]&&<img src={publicAsset(`/icons/${technologyIcons[tech]}.svg`)} alt=""/>}{t.tags?.[tech]||tech}</span>)}</div></div><div className="v-card-title"><h3>{project.title}</h3><span className="v-card-arrow" aria-hidden="true">↗</span></div><p>{project.summary}</p><div className="v-card-end"><span className="v-card-status">{project.status}</span><span className="v-view-project">{t.card.view}</span></div></div>
   </Link>;
 }

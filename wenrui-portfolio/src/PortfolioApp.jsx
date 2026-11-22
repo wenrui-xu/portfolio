@@ -7,4 +7,4 @@ import CaseStudy from './pages/CaseStudy';
 import NotFound from './pages/NotFound';
 import {LocaleProvider} from './locale';
 
-export default function PortfolioApp(){return <LocaleProvider><BrowserRouter><Routes><Route element={<SiteLayout/>}><Route path="/" element={<Home/>}/><Route path="/work" element={<Work/>}/><Route path="/work/:slug" element={<CaseStudy/>}/><Route path="*" element={<NotFound/>}/></Route></Routes></BrowserRouter></LocaleProvider>}
+export default function PortfolioApp(){return <LocaleProvider><BrowserRouter basename={import.meta.env.BASE_URL}><Routes><Route element={<SiteLayout/>}><Route path="/" element={<Home/>}/><Route path="/work" element={<Work/>}/><Route path="/work/:slug" element={<CaseStudy/>}/><Route path="*" element={<NotFound/>}/></Route></Routes></BrowserRouter></LocaleProvider>}

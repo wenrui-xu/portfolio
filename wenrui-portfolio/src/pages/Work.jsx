@@ -3,6 +3,7 @@ import {Link,useLocation} from 'react-router-dom';
 import ProjectCard,{ProjectMedia} from '../components/ProjectCard';
 import {categories,technologyIcons} from '../data/content';
 import {useLocale} from '../locale';
+import {publicAsset} from '../data/publicAsset';
 
 const STORY_INTERVAL=3500;
 
@@ -280,7 +281,7 @@ export default function Work(){
               aria-pressed={technology===name}
               onClick={()=>setTechnology(technology===name?'':name)}
             >
-              {technologyIcons[name]&&<img src={`/icons/${technologyIcons[name]}.svg`} alt=""/>}
+              {technologyIcons[name]&&<img src={publicAsset(`/icons/${technologyIcons[name]}.svg`)} alt=""/>}
               {t.tags?.[name]||name}
             </button>
           )}

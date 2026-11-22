@@ -7,6 +7,7 @@ import About from '../components/About';
 import SocialLink from '../components/SocialLink';
 import {social,technologyIcons} from '../data/content';
 import {useLocale} from '../locale';
+import {publicAsset} from '../data/publicAsset';
 
 const skills=['Unity','C#','Kotlin','Python','Blender','Generative AI'];
 
@@ -44,7 +45,7 @@ function Hero(){
       <p className="v-focus">{t.hero.focus}</p>
       <p className="v-hero-description">{t.hero.description}</p>
       <div className="v-hero-actions"><Link className="v-primary-link" to="/work"><span aria-hidden="true">✳</span> {t.hero.viewWork} <span aria-hidden="true">↗</span></Link><div className="v-hero-social"><SocialLink name="github" label="GitHub" href={social.github}/><SocialLink name="linkedin" label="LinkedIn" href={social.linkedin}/><SocialLink name="email" label={t.hero.email} href={`mailto:${social.email}`}/></div></div>
-      <div className="v-skill-list" aria-label={t.hero.skills}>{skills.map(name=><div key={name}><img src={`/icons/${technologyIcons[name]}.svg`} alt=""/><span>{name}</span></div>)}</div>
+      <div className="v-skill-list" aria-label={t.hero.skills}>{skills.map(name=><div key={name}><img src={publicAsset(`/icons/${technologyIcons[name]}.svg`)} alt=""/><span>{name}</span></div>)}</div>
     </div>
     <div className="v-hero-avatar"><InteractivePortrait/></div>
     <a className="v-hero-scroll" href="#showreel">{t.hero.scroll} <span aria-hidden="true">↓</span></a>
